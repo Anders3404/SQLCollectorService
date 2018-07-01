@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27703.2026
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SQLCollectorService", "SQLCollectorService\SQLCollectorService.csproj", "{5D72817C-8096-48DE-B136-2B0237E9B4D0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProject", "TestProject\TestProject.csproj", "{F759839A-7974-4408-9FFC-0DD2DB2B096D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{5D72817C-8096-48DE-B136-2B0237E9B4D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5D72817C-8096-48DE-B136-2B0237E9B4D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5D72817C-8096-48DE-B136-2B0237E9B4D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F759839A-7974-4408-9FFC-0DD2DB2B096D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F759839A-7974-4408-9FFC-0DD2DB2B096D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F759839A-7974-4408-9FFC-0DD2DB2B096D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F759839A-7974-4408-9FFC-0DD2DB2B096D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
