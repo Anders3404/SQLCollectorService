@@ -11,11 +11,49 @@ namespace SQLCollectorService.Classes
 {
     static class CollectorFuctions
     {
+
+        private static string _connectionstring = "";
+        private static string _servername = "";
+        public static bool IsServerConnected(string connectionString)
+        {
+            using (SqlConnection connection = new SqlConnection(ConnectionString))
+            {
+                try
+                {
+                    connection.Open();
+                    return true;
+                }
+                catch (SqlException)
+                {
+                    return false;
+                }
+            }
+        }
+
+        public static string ConnectionString
+        {
+            get { return _connectionstring; }
+            set { _connectionstring = value; }
+
+
+        }
+
+        public static string Servername
+        {
+            get { return _servername; }
+            set { _servername = value; }
+
+
+        }
+
+
+
+
         public static int CollectorInit(string ConnectionString, string ServerName)
         {
             SqlParameter SQLSourceInstance = new SqlParameter("@ServerName", SqlDbType.VarChar);
             SQLSourceInstance.Value = ServerName;
-            SqlParameter CollectID = new SqlParameter("@ID", SqlDbType.Int);
+            SqlParameter CollectID = new SqlParameter("@CollectID", SqlDbType.Int);
             CollectID.Direction = ParameterDirection.Output;
             Int32 outCollectID = 0;
             using (SqlDataReader reader = SqlHelper.ExecuteReader(ConnectionString, "usp_NewCollection", System.Data.CommandType.StoredProcedure, SQLSourceInstance, CollectID))
@@ -73,6 +111,35 @@ namespace SQLCollectorService.Classes
                 
             }
 
+
+        }
+
+
+        public static void CollectBackupStatus(string ConnectionString, string DWConnectionString, int CollectID)
+        {
+
+            string BackupStatusSQL = "SELECT @CollectID AS CollectID, GETDATE() AS CollectDate, @@SERVERNAME AS Servername, d.name DatabaseName, d.recovery_model_desc, (" +
+                " SELECT MAX(backup_start_date) FROM msdb.dbo.backupset b  WHERE b.database_name = d.name AND type = 'D' ) AS 'LastFullBackup', " +
+                "(SELECT MAX(backup_start_date) FROM msdb.dbo.backupset b  WHERE b.database_name = d.name AND type = 'I') AS 'LastDiffBackup', " +
+                "(SELECT MAX(backup_start_date) FROM msdb.dbo.backupset b  WHERE b.database_name = d.name AND type = 'L') AS 'LastLogBackup' " +
+                "FROM sys.databases d WHERE d.source_database_id IS NULL AND database_id NOT IN (SELECT database_id FROM sys.database_mirroring WHERE mirroring_role <> 1);";
+
+            using (DataTable da = SqlHelper.FillDataTable(ConnectionString, BackupStatusSQL, System.Data.CommandType.Text))
+            {
+                DataTable ServerInfoDataTable = new DataTable();
+
+                SqlHelper.LoadDataTable(DWConnectionString, da, "collector.serverinfo   ");
+                
+            }
+
+
+            using (DataTable da = SqlHelper.FillDataTable(ConnectionString, BackupStatusSQL, System.Data.CommandType.Text))
+            {
+                DataTable ServerInfoDataTable = new DataTable();
+
+                SqlHelper.LoadDataTable(DWConnectionString, da, "collector.backupstatus");
+
+            }
 
         }
     }

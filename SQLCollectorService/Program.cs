@@ -8,6 +8,7 @@ using System.Data.Sql;
 using System.Data.SqlClient;
 using Microsoft.SqlServer.Management.RegisteredServers;
 using Microsoft.SqlServer.Management.Smo;
+using System.Configuration;
 
 
 namespace SQLCollectorService
@@ -16,22 +17,33 @@ namespace SQLCollectorService
     {
         static void Main(string[] args)
         {
-            //RegisteredServerCollection registeredServers = new RegisteredServerCollection; 
-            //System.Data.Sql.SqlDataSourceEnumerator instance = System.Data.Sql.SqlDataSourceEnumerator.Instance;
-
-            string DWConnectionString = "Data Source=.; Initial Catalog=IDBMGMT;Integrated Security=true;";
+                       
+            string DWConnectionStringClassic = ConfigurationManager.ConnectionStrings["Classic"].ToString();
+            string DWConnectionStringPaaS = ConfigurationManager.ConnectionStrings["PaaS"].ToString();
+            string DWConnectionString = "";
             string SourceConnectionString = "";
+
+            if  (SQLCollectorService.Classes.SqlHelper.IsServerConnected(DWConnectionStringClassic)== true)
+            {
+                DWConnectionString = DWConnectionStringClassic;
+            }
+            else if (SQLCollectorService.Classes.SqlHelper.IsServerConnected(DWConnectionStringPaaS) == true)
+            {
+                DWConnectionString = DWConnectionStringPaaS;
+            }
+
             System.Data.DataTable table2 = SmoApplication.EnumAvailableSqlServers(true);
 
             foreach (System.Data.DataRow row in table2.Rows)
             {
-                SourceConnectionString= "Data Source=" + row["Name"].ToString() + "; Initial Catalog=IDBMGMT;Integrated Security=true;";
+                SourceConnectionString= "Data Source=" + row["Name"].ToString() + "; Initial Catalog=master;Integrated Security=true;";
                 int CollectID = SQLCollectorService.Classes.CollectorFuctions.CollectorInit(DWConnectionString, row["Name"].ToString());
 
                 Console.WriteLine("CollectID for " + row["Name"].ToString() + " is: " + CollectID.ToString());
 
                 SQLCollectorService.Classes.CollectorFuctions.CollectServerInfo(SourceConnectionString, DWConnectionString, CollectID);
-                
+                SQLCollectorService.Classes.CollectorFuctions.CollectBackupStatus(SourceConnectionString, DWConnectionString, CollectID);
+
                 if (row["Version"].ToString().StartsWith("10.0")==true)
                 {
                     Console.WriteLine("This is SQL Server 2008");

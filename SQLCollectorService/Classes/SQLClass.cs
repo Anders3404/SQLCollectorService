@@ -8,8 +8,48 @@ using System.Data;
 
 namespace SQLCollectorService.Classes
 {
+
+
     static class SqlHelper
+
+
     {
+
+        private static string _connectionstring = "";
+        private static string _servername = "";
+        public static bool IsServerConnected(string connectionString)
+        {
+            using (SqlConnection connection = new SqlConnection(ConnectionString))
+            {
+                try
+                {
+                    connection.Open();
+                    return true;
+                }
+                catch (SqlException)
+                {
+                    return false;
+                }
+            }
+        }
+
+        public static string ConnectionString
+        {
+            get { return _connectionstring; }
+            set { _connectionstring = value; }
+
+
+        }
+
+        public static string Servername
+        {
+            get { return _servername; }
+            set { _servername = value; }
+
+
+        }
+
+
         /// <summary>
         /// Set the connection, command, and then execute the command with non query.
         /// </summary>
